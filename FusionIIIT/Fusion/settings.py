@@ -98,7 +98,6 @@ INSTALLED_APPS = [
     'applications.complaint_system.apps.ComplaintSystemConfig',
     'applications.file_tracking.apps.FileTrackingConfig',
     'applications.finance_accounts.apps.FinanceAccountsConfig',
-    'applications.gymkhana.apps.GymkhanaConfig',
     'applications.globals.apps.GlobalsConfig',
     'applications.health_center.apps.HealthCenterConfig',
     'applications.leave.apps.LeaveConfig',
@@ -111,7 +110,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth',
     'allauth.socialaccount.providers.google',
-    'semanticuiforms',
 ]
 
 MIDDLEWARE = [
@@ -130,6 +128,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': ['/', os.path.join(BASE_DIR, 'templates')],
+
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
