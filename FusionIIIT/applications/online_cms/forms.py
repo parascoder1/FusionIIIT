@@ -19,7 +19,7 @@ class QuizForm(forms.Form):
     def clean(self):
         sdate=self.cleaned_data.get("startdate")
         stime=self.cleaned_data.get("starttime")
-        print(stime,"stime")
+        print(sdate,"sdate")
         today=datetime.datetime.now()
         k1=stime.hour
         k2=stime.minute

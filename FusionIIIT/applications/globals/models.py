@@ -35,6 +35,29 @@ class DepartmentInfo(models.Model):
         return 'department: {}'.format(self.name)
 
 
+# class ExtraInfo(models.Model):
+#     id = models.CharField(max_length=20, primary_key=True)
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     sex = models.CharField(max_length=2, choices=Constants.SEX_CHOICES, default='M')
+#     age = models.IntegerField(default=18)
+#     address = models.TextField(max_length=1000, default="")
+#     phone_no = models.BigIntegerField()
+#     user_type = models.CharField(max_length=20, choices=Constants.USER_CHOICES)
+#     department = models.ForeignKey(DepartmentInfo, on_delete=models.CASCADE, null=True, blank=True)
+#     profile_picture = models.ImageField(null=True, blank=True)
+#     about_me = models.TextField(default='', max_length=1000, blank=True)
+#
+#     def __str__(self):
+#         return '{} - {}'.format(self.id, self.user.username)
+#
+# class HoldsDesignation(models.Model):
+#     user = models.ForeignKey(User, related_name='holds_designations', on_delete=models.CASCADE)
+#     working = models.ForeignKey(User, related_name='current_designation')
+#     designation = models.ForeignKey(Designation, related_name='designees', on_delete=models.CASCADE)
+#     held_at = models.DateTimeField(auto_now=True)
+#
+#     def __str__(self):
+#         return '{} - {}'.format(self.user.username,self.designation)
 class ExtraInfo(models.Model):
     id = models.CharField(max_length=20, primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)

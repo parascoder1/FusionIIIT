@@ -67,18 +67,35 @@ Create Contest
                 </div>
 
             </div>
-            <div class="ui two fields">
-              <div class="ui calendar field" >
-                  <label>Start Time</label>
-                  <div class="ui input left icon">
-                      <i class="hourglass empty icon"></i> <input type="date" id="startDate" name="startdate" required><input type="time" id="startTime" name="starttime" required>
-                  </div>
+            <div class="two fields">
+              <div class="ui calendar field" id="example2">
+                <label>Start Date</label>
+                <div class="ui input left icon">
+                  {{ form.startdate }}
+                </div>
               </div>
-              <div class="ui calendar field" >
-                  <label>End Time </label>
-                  <div class="ui input left icon">
-                      <i class="hourglass empty icon"></i> <input type="date" id="endDate" name="enddate" required><input type="time" id="endTime" name="endtime" required>
-                  </div>
+              <div class="ui calendar field" id='example6'>
+                <label>Start Time</label>
+                <div class="ui input left icon">
+                  <i class="hourglass empty icon"></i>
+                  {{ form.starttime}}
+                </div>
+              </div>
+            </div>
+            <div class="two fields">
+              <div class="ui calendar field" id="example3">
+                <label>End Date</label>
+                <div class="ui input left icon">
+                  {{ form.enddate }}
+                </div>
+              </div>
+
+              <div class="ui calendar field"  id='example7'>
+                <label>End Time</label>
+                <div class="ui input left icon">
+                  <i class="hourglass full icon"></i>
+                  {{ form.endtime}}
+                </div>
               </div>
             </div>
             <div class="ui calendar field">
@@ -130,21 +147,20 @@ Create Contest
 
 {% endif %}
 <script>
-    $('#example2').calendar({
-        type: 'date'
-    });
-    $('#example3').calendar({
-        type: 'time'
-    });
-    $('#example6').calendar({
-        ampm: false,
-        type: 'time'
-    });
-    $('#example7').calendar({
-        ampm: false,
-        type: 'time'
-    });
-
+$('#example2').calendar({
+type: 'date'
+});
+$('#example3').calendar({
+type: 'date'
+});
+$('#example6').calendar({
+  ampm: false,
+  type: 'time'
+});
+$('#example7').calendar({
+  ampm: false,
+  type: 'time'
+});
 </script>
 
 <script type="text/javascript">

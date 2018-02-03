@@ -6,6 +6,7 @@ import os
 import random
 import subprocess
 from datetime import datetime, time, timedelta
+from django.forms.models import model_to_dict
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -20,24 +21,16 @@ from applications.academic_procedures.models import Register
 from applications.globals.models import ExtraInfo
 
 from .forms import QuestionFormObjective, QuizForm
-from .helpers import semester
+from .helpers import semester,create_thumbnail
 from .models import (Assignment, CourseDocuments, CourseVideo, Forum,
                      ForumReply, Quiz, QuizQuestion, QuizResult, StudentAnswer,
                      StudentAssignment, QuestionBank, Topics, Question)
 
-
-def create_thumbnail(course, row, name, ext, attach_str, thumb_time, thumb_size):
-    filepath = settings.MEDIA_ROOT + '/online_cms/' + course.course_id + '/vid/' + name + ext
-#    video_name = row.video_name[:-4]
-    filename = settings.MEDIA_ROOT + '/online_cms/' + course.course_id + '/vid/'
-    filename = filename + name.replace(' ', '-') + '-' + attach_str + '.png'
-    process = 'ffmpeg -y -i ' + filepath + ' -vframes ' + str(1) + ' -an -s '
-    process = process + thumb_size + ' -ss ' + str(thumb_time) + ' ' + filename
-    subprocess.call(process, shell=True)
-
-
 @login_required
 def viewcourses(request):
+    '''
+    desc: Shows all the courses under the user
+    '''
     user = request.user
     extrainfo = ExtraInfo.objects.get(user=user)
     if extrainfo.user_type == 'student':
@@ -60,6 +53,9 @@ def viewcourses(request):
 
 @login_required
 def course(request, course_code):
+    '''
+    desc: Home page for each courses for Student/Faculty
+    '''
     user = request.user
     extrainfo = ExtraInfo.objects.get(user=user)
     if extrainfo.user_type == 'student':
@@ -70,10 +66,12 @@ def course(request, course_code):
         videos = CourseVideo.objects.filter(course_id=course[0])
         slides = CourseDocuments.objects.filter(course_id=course[0])
         quiz = Quiz.objects.filter(course_id=course)
+        assignment = Assignment.objects.filter(course_id=course[0])
+        #marks to store the marks of quizes of student
+        #marks_pk to store the quizs taken by student
         marks = []
         quizs = []
         marks_pk = []
-        assignment = Assignment.objects.filter(course_id=course[0])
         for q in quiz:
             qs = QuizResult.objects.filter(quiz_id=q, student_id=student)
             qs_pk = QuizResult.objects.filter(
@@ -83,6 +81,7 @@ def course(request, course_code):
             if len(qs) is not 0:
                 marks.append(qs[0])
                 marks_pk.append(qs_pk[0])
+        #to tell if the user is a lecturer or a student
         lec = 0
         comments = Forum.objects.filter(course_id=course).order_by('comment_time')
         answers = collections.OrderedDict()
@@ -153,10 +152,8 @@ def course(request, course_code):
 @login_required
 def upload_assignment(request, course_code):
     extrainfo = ExtraInfo.objects.get(user=request.user)
-    if extrainfo.designation.name == "student":
+    if extrainfo.user_type == "student":
         student = Student.objects.get(id=extrainfo)
-#        roll = student.id.id[:4]
-#        course = Course.objects.filter(course_id=course_code, sem=semester(roll))
         try:
             doc = request.FILES.get('img')
             assi_name = request.POST.get('assignment_topic')
@@ -176,7 +173,6 @@ def upload_assignment(request, course_code):
         fs.save(name + file_extenstion, doc)
         uploaded_file_url = "/media/online_cms/" + course_code + "/assi/" + assign.assignment_name
         uploaded_file_url = uploaded_file_url + "/" + student.id.id + "/" + name + file_extenstion
-#        index = uploaded_file_url.rfind('/')
         sa = StudentAssignment(
          student_id=student,
          assignment_id=assign,
@@ -191,9 +187,8 @@ def upload_assignment(request, course_code):
 
 @login_required
 def add_document(request, course_code):
-    #    CHECK FOR ERRORS IN UPLOADING
     extrainfo = ExtraInfo.objects.get(user=request.user)
-    if extrainfo.designation.name == "faculty":
+    if extrainfo.user_type == "faculty":
         instructor = Instructor.objects.filter(instructor_id=extrainfo)
         for ins in instructor:
             if ins.course_id.course_id == course_code:
@@ -215,8 +210,6 @@ def add_document(request, course_code):
         fs.save(filename + file_extenstion, doc)
         uploaded_file_url = "/media/online_cms/" + course_code + "/doc/" + filename
         uploaded_file_url = uploaded_file_url + file_extenstion
-#        index = uploaded_file_url.rfind('/')
-
         CourseDocuments.objects.create(
             course_id=course,
             upload_time=datetime.now(),
@@ -231,11 +224,9 @@ def add_document(request, course_code):
 
 @login_required
 def add_videos(request, course_code):
-
-    # CHECK FOR ERRORS IN UPLOADING
     extrainfo = ExtraInfo.objects.get(user=request.user)
-    print(extrainfo.designation)
-    if extrainfo.designation.name == "faculty":
+
+    if extrainfo.user_type == "faculty":
         instructor = Instructor.objects.filter(instructor_id=extrainfo)
         for ins in instructor:
             if ins.course_id.course_id == course_code:
@@ -257,8 +248,6 @@ def add_videos(request, course_code):
         fs.save(filename+file_extenstion, vid)
         uploaded_file_url = "/media/online_cms/" + course_code + "/vid/" + filename
         uploaded_file_url = uploaded_file_url + file_extenstion
-#        index = uploaded_file_url.rfind('/')
-
         video = CourseVideo.objects.create(
             course_id=course,
             upload_time=datetime.now(),
@@ -272,12 +261,12 @@ def add_videos(request, course_code):
     else:
         return HttpResponse("not found")
 
-
+########FORUM FUNCTIONS############
 @login_required
 def forum(request, course_code):
     # take care of sem
     extrainfo = ExtraInfo.objects.get(user=request.user)
-    if extrainfo.designation.name == "student":
+    if extrainfo.user_type == "student":
         student = Student.objects.get(id=extrainfo)
         roll = student.id.id[:4]
         course = Course.objects.get(course_id=course_code, sem=semester(roll))
@@ -292,7 +281,6 @@ def forum(request, course_code):
         lec = 1
     else:
         lec = 0
-#    question = {}
     answers = collections.OrderedDict()
     for comment in comments:
         fr = ForumReply.objects.filter(forum_reply=comment)
@@ -306,7 +294,7 @@ def forum(request, course_code):
 @login_required
 def ajax_reply(request, course_code):
     extrainfo = ExtraInfo.objects.get(user=request.user)
-    if extrainfo.designation.name == "student":
+    if extrainfo.user_type == "student":
         student = Student.objects.get(id=extrainfo)
         roll = student.id.id[:4]
         course = Course.objects.get(course_id=course_code, sem=semester(roll))
@@ -337,7 +325,7 @@ def ajax_reply(request, course_code):
 @login_required
 def ajax_new(request, course_code):
     extrainfo = ExtraInfo.objects.get(user=request.user)
-    if extrainfo.designation.name == "student":
+    if extrainfo.user_type == "student":
         student = Student.objects.get(id=extrainfo)
         roll = student.id.id[:4]
         course = Course.objects.get(course_id=course_code, sem=semester(roll))
@@ -384,24 +372,14 @@ def ajax_remove(request, course_code):
         f.delete()
     data = {'message': 'deleted'}
     return HttpResponse(json.dumps(data), content_type='application/json')
-#    extrainfo = ExtraInfo.objects.get(user=request.user)
-#    if extrainfo.designation.name == "student":
-#        student = Student.objects.get(id=extrainfo)
-#        roll = student.id.id[:4]
-#        course = Course.objects.get(course_id=course_code, sem=semester(roll))
-#    else:
-#        instructor = Instructor.objects.filter(instructor_id=extrainfo)
-#        for ins in instructor:
-#            if ins.course_id.course_id == course_code:
-#                course = ins.course_id
 
+#########FORUM FUNCTIONS OVER########
 
 @login_required
 def add_assignment(request, course_code):
     #    CHECK FOR ERRORS IN UPLOADING
     extrainfo = ExtraInfo.objects.get(user=request.user)
-    # course = None
-    if extrainfo.designation.name == "faculty":
+    if extrainfo.user_type == "faculty":
         instructor = Instructor.objects.filter(instructor_id=extrainfo)
         for ins in instructor:
             if ins.course_id.course_id == course_code:
@@ -443,7 +421,7 @@ def edit_bank(request, course_code,qb_code):
     user = request.user
     extrainfo = ExtraInfo.objects.get(user=user)
     lec = 1
-    if extrainfo.designation.name == "faculty":
+    if extrainfo.user_type == "faculty":
         instructor = Instructor.objects.filter(instructor_id=extrainfo)
         for ins in instructor:
             if ins.course_id.course_id == course_code:
@@ -471,7 +449,7 @@ def edit_bank(request, course_code,qb_code):
 def create_bank(request, course_code):
     user = request.user
     extrainfo = ExtraInfo.objects.get(user=user)
-    if extrainfo.designation.name == "faculty":
+    if extrainfo.user_type == "faculty":
         instructor = Instructor.objects.filter(instructor_id=extrainfo)
         for ins in instructor:
             if ins.course_id.course_id == course_code:
@@ -483,7 +461,7 @@ def create_bank(request, course_code):
 def remove_bank(request, course_code):
     user = request.user
     extrainfo = ExtraInfo.objects.get(user=user)
-    if extrainfo.designation.name == "faculty":
+    if extrainfo.user_type == "faculty":
         instructor = Instructor.objects.filter(instructor_id=extrainfo)
         for ins in instructor:
             if ins.course_id.course_id == course_code:
@@ -500,27 +478,29 @@ def add_question(request, course_code, qb_code, topic_id):
     user = request.user
     print(qb_code,topic_id,"ADADADADASDADA")
     extrainfo = ExtraInfo.objects.get(user=user)
-    if extrainfo.designation.name == "faculty":
+    if extrainfo.user_type == "faculty":
         instructor = Instructor.objects.filter(instructor_id=extrainfo)
         for ins in instructor:
             if ins.course_id.course_id == course_code:
                 course = ins.course_id
         qb=QuestionBank.objects.filter(pk=qb_code)
         topic=Topics.objects.get(id=request.POST.get('topic'))
-        filename, file_extenstion = os.path.splitext(request.FILES['image'].name)
-        image = request.FILES['image']
-        topic_name = topic.topic_name.replace(" ","_")[:-2]
-        full_path = settings.MEDIA_ROOT + "/online_cms/" + course_code
-        full_path = full_path + "/qb/" + qb_code + "/" + topic_name  + "/"
-        print(full_path+"  uggug")
-        url = settings.MEDIA_URL + filename
-        if not os.path.isdir(full_path):
-            cmd = "mkdir " + full_path
-            subprocess.call(cmd, shell=True)
-        fs = FileSystemStorage(full_path, url)
-        fs.save(image.name, image)
-        uploaded_file_url = "/media/online_cms/" + course_code
-        uploaded_file_url = uploaded_file_url + "/qb/" + qb_code + "/" + topic_name + "/" + image.name
+        try:
+            filename, file_extenstion = os.path.splitext(request.FILES['image'].name)
+            image = request.FILES['image']
+            topic_name = topic.topic_name.replace(" ","_")[:-2]
+            full_path = settings.MEDIA_ROOT + "/online_cms/" + course_code
+            full_path = full_path + "/qb/" + qb_code + "/" + topic_name  + "/"
+            url = settings.MEDIA_URL + filename
+            if not os.path.isdir(full_path):
+                cmd = "mkdir " + full_path
+                subprocess.call(cmd, shell=True)
+            fs = FileSystemStorage(full_path, url)
+            fs.save(image.name, image)
+            uploaded_file_url = "/media/online_cms/" + course_code
+            uploaded_file_url = uploaded_file_url + "/qb/" + qb_code + "/" + topic_name + "/" + image.name
+        except:
+            uploaded_file_url = None
 
         q=Question.objects.create(
             question_bank=qb[0],
@@ -541,7 +521,7 @@ def add_question(request, course_code, qb_code, topic_id):
 def remove_question(request, course_code, qb_code, topic_id):
     user = request.user
     extrainfo = ExtraInfo.objects.get(user=user)
-    if extrainfo.designation.name == "faculty":
+    if extrainfo.user_type == "faculty":
         instructor = Instructor.objects.filter(instructor_id=extrainfo)
         for ins in instructor:
             if ins.course_id.course_id == course_code:
@@ -551,12 +531,13 @@ def remove_question(request, course_code, qb_code, topic_id):
         question.delete()
         data={'message':'question deleted'}
         return HttpResponse(json.dumps(data), content_type='application/json')
+
 @login_required
 def edit_qb_topics(request, course_code, qb_code, topic_id):
     user = request.user
     extrainfo = ExtraInfo.objects.get(user=user)
     lec = 1
-    if extrainfo.designation.name == "faculty":
+    if extrainfo.user_type == "faculty":
         instructor = Instructor.objects.filter(instructor_id=extrainfo)
         for ins in instructor:
             if ins.course_id.course_id == course_code:
@@ -877,8 +858,13 @@ def add_question_topicwise(request, course_code, quiz_id):
         for ins in instructor:
             if ins.course_id.course_id == course_code:
                 course = ins.course_id
-        ques_bank=request.POST.get('qbank')
-        topic=request.POST.get('topic')
+        ques_bank = request.POST.get('qbank')
+        topic = request.POST.get('topic')
+        print(ques_bank,topic,"asdasdadsd")
+        questions = Question.objects.filter(question_bank=ques_bank, topic=topic)
+        context = {'questions': questions}
+        print(questions)
+        return render(request, 'coursemanagement/select_question.html', context)
 
 
 
@@ -895,17 +881,14 @@ def remove_quiz(request, course_code):
 @login_required
 def ajax_assess(request, course_code):
     sa = StudentAssignment.objects.get(pk=request.POST.get('pk'))
-#    print(sa,"qwerty")
     sa.score = request.POST.get('marks')
     sa.save()
-#    print(sa,"qwerty")
     return HttpResponse("Marks uploaded")
 
 
 @login_required
 def ajax_feedback(request, course_code):
     sa = StudentAssignment.objects.get(pk=request.POST.get('pk'))
-#    print(sa,"qwerty")
     sa.feedback = request.POST.get('feedback')
     sa.save()
 #    print(sa,"qwerty")

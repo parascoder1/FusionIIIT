@@ -53,11 +53,11 @@ class Question(models.Model):
     image = models.TextField(max_length=1000, null=True)
     marks = models.IntegerField()
 
-    def __str__(self):
-        return '{} - {} - {} - {} - {} - {} - {} - {} - {} - {} - {}'.format(
-            self.pk, self.question_bank, self.question, self.topic, self.options1,
-            self.options2, self.options3, self.options4,
-            self.options5, self.answer)
+    # def __str__(self):
+    #     return '{} - {} - {} - {} - {} - {} - {} - {} - {} - {} - {}'.format(
+    #         self.pk, self.question_bank, self.question, self.topic, self.options1,
+    #         self.options2, self.options3, self.options4,
+    #         self.options5, self.answer)
 
 
 

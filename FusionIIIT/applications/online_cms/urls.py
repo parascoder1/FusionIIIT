@@ -3,19 +3,19 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
+# common
     url(r'^$', views.viewcourses, name='viewcourses'),
-    url(r'^(?P<course_code>[A-z]+[0-9]+)/$', views.course,
-        name='course'),
-    # course_name will have blank spaces in between which is not possible
-    # to send something in the url so as to identify which course it is.
-    # students
-    # lecturer
+    url(r'^(?P<course_code>[A-z]+[0-9]+)/$', views.course, name='course'),
+# student
+    url(r'^(?P<course_code>[A-z]+[0-9]+)/upload_assignment$', views.upload_assignment,
+        name='upload_assignment'),
+# faculty
+
     url(r'^(?P<course_code>[A-z]+[0-9]+)/add_documents$', views.add_document,
         name='add_document'),
     url(r'^(?P<course_code>[A-z]+[0-9]+)/add_assignment$',
         views.add_assignment, name='add_assignment'),
-    url(r'^(?P<course_code>[A-z]+[0-9]+)/upload_assignment$', views.upload_assignment,
-        name='upload_assignment'),
+
     url(r'^(?P<course_code>[A-z]+[0-9]+)/add_video$', views.add_videos,
         name='add_videos'),
     url(r'^(?P<course_code>[A-z]+[0-9]+)/forum$', views.forum,
@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^(?P<course_code>[A-z]+[0-9]+)/create_quiz/$', views.create_quiz, name='create_quiz'),
     url(r'^(?P<course_code>[A-z]+[0-9]+)/edit_quiz/(?P<quiz_code>[0-9]+)/$',
         views.edit_quiz, name='edit_quiz'),
-    url(r'^(?P<course_code>[A-z]+[0-9]+)/(?P<quiz_id>[0-9]+)/add_question$', views.add_question_topicwise,
+    url(r'^(?P<course_code>[A-z]+[0-9]+)/(?P<quiz_id>[0-9]+)/add_question_topic$', views.add_question_topicwise,
         name='add_question_topicwise'),
 
 #    url(r'^(?P<course_code>[A-z]+[0-9]+)/create_prac_quiz/$', views.create_prac_quiz, name='create_prac_quiz'),
