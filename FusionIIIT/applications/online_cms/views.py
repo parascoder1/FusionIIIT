@@ -839,6 +839,7 @@ def edit_quiz(request, course_code, quiz_code):
         counter = dict(collections.Counter(topic_list))
         print(counter,"cuounter")
         form = QuizForm()
+        questions_left = quiz.number_of_question - len(questions)
         description = quiz.description
         description = [z.encode('ascii', 'ignore') for z in description.split('/')]
         rules = quiz.rules
@@ -846,9 +847,48 @@ def edit_quiz(request, course_code, quiz_code):
         questionbank=QuestionBank.objects.filter(instructor_id=extrainfo, course_id=course)
         topic=Topics.objects.filter(course_id=course)
         return render(request, 'coursemanagement/editcontest.html',
-                      {'details': quiz,'questionbank':questionbank,'topics':topic,'course': course, 'form':form, 'counter':counter, 'questions': questions,'description': description, 'rules': rules})
+                      {'details': quiz,'questionbank':questionbank,'topics':topic,'course': course, 'form':form, 'counter':counter, 'questions': questions,'description': description, 'rules': rules, 'questions_left': questions_left})
     else:
         return HttpResponse("unautherized Access!!It will be reported!!")
+
+@login_required
+def edit_quiz_topic(request, course_code, quiz_code, topic_id):
+    user = request.user
+    extrainfo = ExtraInfo.objects.get(user=user)
+    lec = 1
+    if extrainfo.user_type == "faculty":
+        instructor = Instructor.objects.filter(instructor_id=extrainfo)
+        for ins in instructor:
+            if ins.course_id.course_id == course_code:
+                course = ins.course_id
+        quiz_question = QuizQuestion.objects.filter(quiz_id=quiz_code)
+        quest = []
+        quiz = Quiz.objects.get(pk=quiz_code)
+        for q in quiz_question:
+            print(type(q.question.topic.pk),"------1-----")
+            print(type(topic_id),"-----2-----------")
+            if str(q.question.topic.pk) == topic_id:
+                quest.append(q.question)
+
+        topic=Topics.objects.get(id=topic_id)
+        print(quest)
+        return render(request, 'coursemanagement/topicwisequiz.html',{'Lecturer':lec,'questions': quest,'quiz': quiz, 'topic':topic,'course':course})
+
+@login_required
+def remove_quiz_question(request, course_code, quiz_code, topic_id):
+    user = request.user
+    extrainfo = ExtraInfo.objects.get(user=user)
+    if extrainfo.user_type == "faculty":
+        instructor = Instructor.objects.filter(instructor_id=extrainfo)
+        for ins in instructor:
+            if ins.course_id.course_id == course_code:
+                course = ins.course_id
+
+        question=Question.objects.get(pk=request.POST.get('pk'))
+        question_remove=QuizQuestion.objects.get(question=question)
+        question_remove.delete()
+        data={'message':'question deleted'}
+        return HttpResponse(json.dumps(data), content_type='application/json')
 
 @login_required
 def add_question_topicwise(request, course_code, quiz_id):
@@ -859,12 +899,46 @@ def add_question_topicwise(request, course_code, quiz_id):
             if ins.course_id.course_id == course_code:
                 course = ins.course_id
         ques_bank = request.POST.get('qbank')
+        quiz = Quiz.objects.get(pk=quiz_id)
         topic = request.POST.get('topic')
-        print(ques_bank,topic,"asdasdadsd")
         questions = Question.objects.filter(question_bank=ques_bank, topic=topic)
-        context = {'questions': questions}
-        print(questions)
+        questions_already_present = QuizQuestion.objects.filter(quiz_id=quiz_id)
+        question_already_present = []
+        for ques in questions_already_present:
+            question_already_present.append(ques.question)
+        temp = []
+        if questions_already_present:
+            for question in questions:
+                if question not in question_already_present:
+                    temp.append(question)
+                print('x')
+            questions = temp
+        context = {
+                    'questions': questions,
+                    'course': course,
+                    'details': quiz
+                    }
         return render(request, 'coursemanagement/select_question.html', context)
+
+
+@login_required
+def add_questions_to_quiz(request, course_code, quiz_id):
+    extrainfo = ExtraInfo.objects.get(user=request.user)
+    if extrainfo.user_type == 'faculty':
+        instructor = Instructor.objects.filter(instructor_id=extrainfo)
+        for ins in instructor:
+            if ins.course_id.course_id == course_code:
+                course = ins.course_id
+        questions_selected = request.POST.getlist('questions_selected')
+        quiz = Quiz.objects.get(pk= quiz_id)
+        for questions in questions_selected:
+            question = Question.objects.get(pk = int(questions))
+            QuizQuestion.objects.create(
+                quiz_id = quiz,
+                question = question
+            )
+        return redirect('/ocms/' + course_code + '/edit_quiz/'+ quiz_id)
+
 
 
 

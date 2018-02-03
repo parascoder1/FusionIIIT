@@ -54,12 +54,16 @@ Create Contest
     </div>
     <div class="ui eight wide column "style="margin-bottom:5em">
       <div class="ui segment" style="padding:5em">
-        <h4 class="ui dividing header">Question Banks </h4>
-        <form class="ui form" id="question_form" style="margin-top:5em"action="index.html" method="post">
+        <h3 class="ui dividing header">Question Banks </h3>
+        {% if questions|length == 0 %}
+          <h4 class="ui header">No questions of this topic in the current question bank!</h4>
+        {% else %}
+        <form class="ui form" id="question_form" style="margin-top:5em" action="/ocms/{{course.course_id}}/{{details.pk}}/add_questions_to_quiz" method="post">
+          {% csrf_token %}
           {% for question in questions %}
           <div class="inline field">
             <div class="ui checkbox">
-              <input type="checkbox" tabindex="0">
+              <input type="checkbox" name="questions_selected" value="{{question.pk}}"tabindex="0">
               <label>
                 <div class="ui segment" id="ques{{question.pk}}">
                   <div class="ui one column grid">
@@ -89,7 +93,10 @@ Create Contest
             </div>
           </div>
           {% endfor %}
+          <button class="ui blue button" type="submit">Submit</button>
+
         </form>
+        {% endif %}
       </div>
     </div>
   </div>

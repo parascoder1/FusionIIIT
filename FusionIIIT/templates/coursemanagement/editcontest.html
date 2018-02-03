@@ -78,6 +78,8 @@ Edit Contest
                       </div>
                       <a class="ui primary button form_submit" data-id="edit3" id="submit_edit3">Submit</a>
                     </form>
+                    <strong><label>Number Of Questions Left</label></strong>
+                    <br>    {{questions_left}}
 
                       <div class="item">
                           <div class="header">Total Score <a class="edit_contest" data-id="edit4"> <i class="edit icon"></i></a></div>
@@ -105,8 +107,8 @@ Edit Contest
                       <tbody>
                         {% for key, value in counter.items %}
                         <tr>
-                          <td>{{key.topic_name}}</td>
-                          <td>{{value}}</td>
+                          <td><a href="/ocms/{{course.course_id}}/edit_quiz/{{details.pk}}/{{key.pk}}">{{key.topic_name}}</a></td>
+                          <td><a href="#">{{value}}</a></td>
                         </tr>
                         {% endfor %}
                       </tbody>
