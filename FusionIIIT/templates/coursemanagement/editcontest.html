@@ -43,9 +43,10 @@ Edit Contest
                       <form class="ui form"  id='edit1' style="display:none">
                         <div class="ui calendar field" >
                             <label>Start Time</label>
-                            <div class="ui input left icon">
-                                <i class="hourglass empty icon"></i> <input type="date" id="startDate" name="startdate" required><input type="time" id="startTime" name="starttime" required>
-                            </div>
+                            {{ form.startdate }}<br>
+                           <div class="ui input left icon">
+                               <i class="hourglass full icon"></i> {{ form.starttime}}
+                           </div>
                         </div>
                         <a class="ui primary button form_submit"data-id="edit1" id="submit_edit1">Submit</a>
                       </form>
@@ -114,7 +115,7 @@ Edit Contest
                       </tbody>
 
                     </table>
-                    <a href="#" class="ui blue button" style="margin-left:1em">Preview Question Paper</a>
+                    <a href="/ocms/{{course.course_id}}/preview_quiz/{{details.pk}}" class="ui blue button" style="margin-left:1em">Preview Question Paper</a>
                   </div>
                 </div>
 
@@ -191,7 +192,6 @@ Edit Contest
     event.preventDefault();
     var data = new FormData();
     var pk=$(this).attr('data-id');
-    alert(pk+"ADSD");
     var other_data = $('#'+pk).serializeArray();
     $.each(other_data, function(key, input) {
         // alert(input.name);
@@ -210,7 +210,7 @@ Edit Contest
             location.reload();
         },
         error: function(data, err) {
-            alert(err.message);
+            alert(err);
         }
     });
   });

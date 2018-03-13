@@ -117,7 +117,7 @@ Create Contest
       // var csrf = $('input[name=csrfmiddlewaretoken]').val();
       $.ajax({
           type: 'POST',
-          url: '/ocms/{{course.course_id}}/{{quiz.pk}}/{{topic.pk}}/remove_question',
+          url: '/ocms/{{course.course_id}}/{{quiz.pk}}/{{topic.pk}}/remove_quiz_question',
           data: {
               'pk': pk,
               'csrfmiddlewaretoken':'{{csrf_token}}'

@@ -21,11 +21,13 @@ class QuizForm(forms.Form):
         stime=self.cleaned_data.get("starttime")
         print(sdate,"sdate")
         today=datetime.datetime.now()
+        print (today,"todya")
         k1=stime.hour
         k2=stime.minute
         k3=stime.second
         x=time(k1,k2,k3)
         date=datetime.datetime.combine(sdate,x)
+        print( date,"date")
         edate=self.cleaned_data.get("enddate")
         etime=self.cleaned_data.get("endtime")
         k1=etime.hour

@@ -69,6 +69,7 @@ def course(request, course_code):
         assignment = Assignment.objects.filter(course_id=course[0])
         #marks to store the marks of quizes of student
         #marks_pk to store the quizs taken by student
+        #quizs=>quizs that are not over
         marks = []
         quizs = []
         marks_pk = []
@@ -76,6 +77,7 @@ def course(request, course_code):
             qs = QuizResult.objects.filter(quiz_id=q, student_id=student)
             qs_pk = QuizResult.objects.filter(
                 quiz_id=q, student_id=student).values_list('quiz_id', flat=True)
+            print(q.end_time,"endtime ", )
             if q.end_time > timezone.now():
                 quizs.append(q)
             if len(qs) is not 0:
@@ -526,8 +528,9 @@ def remove_question(request, course_code, qb_code, topic_id):
         for ins in instructor:
             if ins.course_id.course_id == course_code:
                 course = ins.course_id
-
+        print(request.POST.get('pk'),"asdasdad")
         question=Question.objects.get(pk=request.POST.get('pk'))
+        print(question)
         question.delete()
         data={'message':'question deleted'}
         return HttpResponse(json.dumps(data), content_type='application/json')
@@ -938,9 +941,24 @@ def add_questions_to_quiz(request, course_code, quiz_id):
                 question = question
             )
         return redirect('/ocms/' + course_code + '/edit_quiz/'+ quiz_id)
-
-
-
+###################################################
+@login_required
+def preview_quiz(request, course_code, quiz_code):
+    extrainfo = ExtraInfo.objects.get(user=request.user)
+    if extrainfo.user_type == 'faculty':
+        instructor = Instructor.objects.filter(instructor_id=extrainfo)
+        for ins in instructor:
+            if ins.course_id.course_id == course_code:
+                course = ins.course_id
+    quiz = Quiz.objects.get(pk=quiz_code)
+    questions = QuizQuestion.objects.filter(quiz_id=quiz)
+    context = {
+        'details':quiz,
+        'course':course,
+        'questions':questions
+    }
+    return render(request,'coursemanagement/preview_quiz.html', context)
+########################################################
 
 @login_required
 def remove_quiz(request, course_code):

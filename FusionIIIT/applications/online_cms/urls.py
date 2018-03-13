@@ -40,8 +40,11 @@ urlpatterns = [
         name='add_question_topicwise'),
     url(r'^(?P<course_code>[A-z]+[0-9]+)/(?P<quiz_id>[0-9]+)/add_questions_to_quiz$', views.add_questions_to_quiz,
         name='add_questions_to_quiz'),
-    url(r'^(?P<course_code>[A-z]+[0-9]+)/(?P<quiz_code>[0-9]+)/(?P<topic_id>[0-9]+)/remove_question$', views.remove_quiz_question,
+    url(r'^(?P<course_code>[A-z]+[0-9]+)/(?P<quiz_code>[0-9]+)/(?P<topic_id>[0-9]+)/remove_quiz_question$', views.remove_quiz_question,
         name='remove_quiz_question'),
+
+    url(r'^(?P<course_code>[A-z]+[0-9]+)/preview_quiz/(?P<quiz_code>[0-9]+)/$', views.preview_quiz,
+        name='preview_quiz'),
 
     url(r'^(?P<course_code>[A-z]+[0-9]+)/edit_quiz_details/(?P<quiz_code>[0-9]+)/$',
         views.edit_quiz_details, name='edit_quiz_details'),

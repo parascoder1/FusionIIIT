@@ -236,8 +236,9 @@
                               <label><br></label>
                               <!-- <a href="/ocms/quiz/{{quiz.pk}}" > -->
                               {% if Lecturer is 0 %}
+                              <!-- if the student have not give n the quiz already then only show the enter button -->
                                 {% if quiz.pk not in quizs_pk %}
-                                <div class="ui primary button disabled quiz_btn" data-start="{{quiz.start_time|date:'Y-m-d'}}" data-pk="{{quiz.pk}}"id="quiz{{quiz.pk}}">
+                                <div class="ui primary button disabled quiz_btn" data-start="{{quiz.start_time|date:'Y-m-dTH:i:sZ'}}" data-pk="{{quiz.pk}}"id="quiz{{quiz.pk}}">
                                  Enter
                                  <i class="arrow right icon"></i>
                                </div>
@@ -534,7 +535,6 @@
             alert(data.message);
             var x = document.getElementById("qb"+pk);
             x.style.display = "none";
-            alert(data.qb);
             if(data.qb == 0)
             {
               var y = document.getElementById("qbtable");
@@ -559,24 +559,20 @@
     $(document).ready(function(){
       var quiz_btn=document.getElementsByClassName('quiz_btn');
       for (i = 0; i < quiz_btn.length; i++) {
-
-          var re = window.setInterval(fun,1000);
+          var re = window.setInterval(fun, 1000);
           var pk = quiz_btn[i].getAttribute('data-pk');
-          // alert(pk+"pk")
           var start = new Date(quiz_btn[i].getAttribute('data-start'));
 
           function fun()
           {
             if({{Lecturer}} == "0"){
               var now=new Date();
-              if (start < now)
-              {
+              if (start < now){
                 $('#quiz'+pk).removeClass('disabled');
               }
             }
-
           }
-          }
+        }
       });
       $('.remove_quiz').click(function(){
         var pk=$(this).attr('data-pk');

@@ -114,14 +114,12 @@ Create Contest
     });
     $('.remove_question').click(function(){
       var pk=$(this).attr('data-pk');
-      // var csrf = $('input[name=csrfmiddlewaretoken]').val();
       $.ajax({
           type: 'POST',
           url: '/ocms/{{course.course_id}}/{{questionbank.pk}}/{{topic.pk}}/remove_question',
           data: {
               'pk': pk,
               'csrfmiddlewaretoken':'{{csrf_token}}'
-
           },
           success: function(data) {
             alert(data.message);
