@@ -603,6 +603,29 @@ def ajax_q(request, quiz_code):
     data = {'status': "1"}
     return HttpResponse(json.dumps(data), content_type='application/json')
 
+def submit(request, quiz_code):
+    ei = ExtraInfo.objects.get(user=request.user)
+    student = Student.objects.get(id=ei)
+    quiz = Quiz.objects.get(pk=quiz_code)
+    stu_ans = StudentAnswer.objects.filter(student_id=student, quiz_id=quiz)
+    score = 0
+    for s_ans in stu_ans:
+       # if s_ans.question_id.answer == s_ans.choice:
+        if s_ans.question_id.question.answer == s_ans.choice:
+            score += s_ans.question_id.question.marks
+        else:
+            score -= (s_ans.quiz_id.negative_marks * s_ans.question_id.question.marks)
+            #score -= s_ans.quiz_id.negative_marks
+    # quiz_res=QuizResult.objects.filter(quiz_id=quiz,student_id=request.user)
+    quiz_res = QuizResult(
+        quiz_id=quiz,
+        student_id=student,
+        score=score,
+        finished=True
+    )
+    quiz_res.save()
+    data = {'message': 'you have submitted, cant enter again now', 'score': quiz_res.score}
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
 @login_required
 def submit(request, quiz_code):

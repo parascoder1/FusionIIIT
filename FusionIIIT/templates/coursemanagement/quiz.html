@@ -48,57 +48,57 @@
                 <!-- images -->
                 <!-- questions -->
                 {% for question in ques %}
-                <div class="centered fourteen wide column questions" data-pk={{question.pk}} data = {{ forloop.counter }}  id="question{{forloop.counter}}" style="display:none">
+                <div class="centered fourteen wide column questions" data-pk={{question.question.pk}} data = {{ forloop.counter }}  id="question{{forloop.counter}}" style="display:none">
                   <div class="image centered fourteen wide column">
-                    <img src="{{question.image}}" style="width:100%;heightL100%">
+                    <img src="{{question.question.image}}" style="width:100%;heightL100%">
                   </div>
                   <div class="question_image centered fourteen wide column ui segment" style="margin-top:1em;padding:2em;">
-                    <p>{{ question.question }}</p>
+                    <p>{{ question.question.question }}</p>
                   <!-- </div>
                   <div class="answer centered fourteen wide column ui segment" style="margin:1em;padding:2em"> -->
                   <div class="ui divider">
                   </div>
                     <form class="ui form"  method="post">
                       {% csrf_token %}
-                      {% if question.options1 %}
+                      {% if question.question.options1 %}
                       <div class="ui radio checkbox" style="margin:2em">
-                        <input type="radio"  name="answer{{question.pk}}" value="1">
-                        <label>{{question.options1}}</label>
+                        <input type="radio"  name="answer{{question.questionpk}}" value="1">
+                        <label>{{question.question.options1}}</label>
                       </div>
                       {% endif %}
                       <br>
-                      {% if question.options2 %}
+                      {% if question.question.options2 %}
                       <div class="ui radio checkbox"style="margin:2em">
-                        <input type="radio"  name="answer{{question.pk}}" value="2">
-                        <label>{{question.options2}}</label>
+                        <input type="radio"  name="answer{{question.question.pk}}" value="2">
+                        <label>{{question.question.options2}}</label>
                       </div>
                       {% endif %}
                       <br>
-                      {% if question.options3 %}
+                      {% if question.question.options3 %}
                       <div class="ui radio checkbox"style="margin:2em">
-                        <input type="radio" name="answer{{question.pk}}" value="3">
-                        <label>{{question.options3}}</label>
+                        <input type="radio" name="answer{{question.question.pk}}" value="3">
+                        <label>{{question.question.options3}}</label>
                       </div>
                       {% endif %}
                       <br>
-                      {% if question.options4 %}
+                      {% if question.question.options4 %}
                       <div class="ui radio checkbox"style="margin:2em">
-                        <input type="radio" name="answer{{question.pk}}" value="4">
-                        <label>{{question.options4}}</label>
+                        <input type="radio" name="answer{{question.question.pk}}" value="4">
+                        <label>{{question.question.options4}}</label>
                       </div>
                       {% endif %}
                       <br>
-                      {% if question.options5 %}
+                      {% if question.question.options5 %}
                       <div class="ui radio checkbox"style="margin:2em">
-                        <input type="radio" name="answer{{question.pk}}" value="5">
-                        <label>{{question.options5}}</label>
+                        <input type="radio" name="answer{{question.question.pk}}" value="5">
+                        <label>{{question.question.options5}}</label>
                       </div>
                       {% endif %}
                       <br>
                       <div class="ui button next">
                         Next Question
                       </div>
-                      <input type="submit" data-pk={{question.pk}} class="ui button floated submit_bt"  value="Submit" />
+                      <input type="submit" data-pk={{question.question.pk}} class="ui button floated submit_bt"  value="Submit" />
                     </form>
                   </div>
                 </div>
