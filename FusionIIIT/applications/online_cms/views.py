@@ -77,7 +77,7 @@ def course(request, course_code):
             qs = QuizResult.objects.filter(quiz_id=q, student_id=student)
             qs_pk = QuizResult.objects.filter(
                 quiz_id=q, student_id=student).values_list('quiz_id', flat=True)
-            print(q.end_time,"endtime ", )
+            print(q.start_time,"endtime ", )
             if q.end_time > timezone.now():
                 quizs.append(q)
             if len(qs) is not 0:
@@ -560,7 +560,11 @@ def quiz(request, quiz_id):
         rules = quiz.rules
         rules = [z.encode('ascii', 'ignore') for z in rules.split('/')]
         ques_pk = QuizQuestion.objects.filter(quiz_id=quiz).values_list('pk', flat=True)
-        random_ques_pk = random.sample(list(ques_pk), length)
+        print(len(list(ques_pk)), length)
+        try:
+            random_ques_pk = random.sample(list(ques_pk), length)
+        except:
+            random_ques_pk = ques_pk
         shuffed_questions = []
         for x in random_ques_pk:
             shuffed_questions.append(QuizQuestion.objects.get(pk=x))

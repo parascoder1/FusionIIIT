@@ -238,7 +238,7 @@
                               {% if Lecturer is 0 %}
                               <!-- if the student have not give n the quiz already then only show the enter button -->
                                 {% if quiz.pk not in quizs_pk %}
-                                <div class="ui primary button disabled quiz_btn" data-start="{{quiz.start_time|date:'Y-m-dTH:i:sZ'}}" data-pk="{{quiz.pk}}"id="quiz{{quiz.pk}}">
+                                <div class="ui primary button disabled quiz_btn" data-start="{{quiz.start_time|date:'Y-m-d H:i:s'}}" data-pk="{{quiz.pk}}"id="quiz{{quiz.pk}}">
                                  Enter
                                  <i class="arrow right icon"></i>
                                </div>
@@ -465,7 +465,7 @@
         $('#tab'+pk).addClass('active');
         $('#tabdata'+prevassessmenttab).removeClass('active');
         $('#tabdata'+pk).addClass('active');
-        
+
         prevassessmenttab = pk;
       });
       });
@@ -569,11 +569,11 @@
           var re = window.setInterval(fun, 1000);
           var pk = quiz_btn[i].getAttribute('data-pk');
           var start = new Date(quiz_btn[i].getAttribute('data-start'));
-
           function fun()
           {
             if({{Lecturer}} == "0"){
               var now=new Date();
+              // alert(start+''+now);
               if (start < now){
                 $('#quiz'+pk).removeClass('disabled');
               }
@@ -634,7 +634,7 @@
           y.style.display = "block";
           ini1 = "result"+num;
         });
-        
+
     $('.tabs').click(function() {
         event.preventDefault();
         var x = document.getElementById(ini);
