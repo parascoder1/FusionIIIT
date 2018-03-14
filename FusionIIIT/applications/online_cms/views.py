@@ -117,10 +117,12 @@ def course(request, course_code):
         marks = []
         quizs = []
         assignment = Assignment.objects.filter(course_id=course)
+        print(assignment,"asdads")
         student_assignment = []
         for assi in assignment:
             sa = StudentAssignment.objects.filter(assignment_id=assi)
             student_assignment.append(sa)
+        print(student_assignment,"ASDs")
         for q in quiz:
             qs = QuizResult.objects.filter(quiz_id=q)
             if q.end_time > timezone.now():
@@ -589,8 +591,10 @@ def ajax_q(request, quiz_code):
     extrainfo = ExtraInfo.objects.get(user=user)
     student = Student.objects.get(id=extrainfo)
     q = request.POST.get('question')
-    ques = QuizQuestion.objects.get(pk=q)
-    quiz_id = Quiz.objects.get(pk=ques.quiz_id.pk)
+    question = Question.objects.get(pk=q)
+    quiz_id = Quiz.objects.get(pk=quiz_code)
+    ques = QuizQuestion.objects.get(question=question,quiz_id=quiz_id)
+
     ans = int(request.POST.get('answer'))
     lead = StudentAnswer.objects.filter(quiz_id=quiz_id, question_id=ques, student_id=student)
     if lead:
