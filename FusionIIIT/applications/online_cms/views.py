@@ -603,6 +603,7 @@ def ajax_q(request, quiz_code):
     data = {'status': "1"}
     return HttpResponse(json.dumps(data), content_type='application/json')
 
+@login_required
 def submit(request, quiz_code):
     ei = ExtraInfo.objects.get(user=request.user)
     student = Student.objects.get(id=ei)
@@ -627,65 +628,6 @@ def submit(request, quiz_code):
     data = {'message': 'you have submitted, cant enter again now', 'score': quiz_res.score}
     return HttpResponse(json.dumps(data), content_type="application/json")
 
-@login_required
-def submit(request, quiz_code):
-    ei = ExtraInfo.objects.get(user=request.user)
-    student = Student.objects.get(id=ei)
-    quiz = Quiz.objects.get(pk=quiz_code)
-    stu_ans = StudentAnswer.objects.filter(student_id=student, quiz_id=quiz)
-    score = 0
-    for s_ans in stu_ans:
-        if s_ans.question_id.answer == s_ans.choice:
-            score += s_ans.question_id.marks
-        else:
-            score -= (s_ans.quiz_id.negative_marks * s_ans.question_id.marks)
-    # quiz_res=QuizResult.objects.filter(quiz_id=quiz,student_id=request.user)
-    quiz_res = QuizResult(
-        quiz_id=quiz,
-        student_id=student,
-        score=score,
-        finished=True
-    )
-    quiz_res.save()
-    data = {'message': 'you have submitted, cant enter again now', 'score': quiz_res.score}
-    return HttpResponse(json.dumps(data), content_type="application/json")
-
-#@login_required
-#def create_prac_quiz(request, course_code):
-#    extrainfo = ExtraInfo.objects.get(user=request.user)
-#    print("tatti")
-#    if extrainfo.user_type == 'faculty':
-#        instructor = Instructor.objects.filter(instructor_id=extrainfo)
-#        for ins in instructor:
-#            if ins.course_id.course_id == course_code:
-#                course = ins.course_id
-#        form = PracticeQuizForm(request.POST or None)
-#        errors = None
-#        if form.is_valid():
-#            total_score = form.cleaned_data[
-#                'number_of_questions'] * form.cleaned_data[
-#                'per_question_score']
-#            description = form.cleaned_data['description']
-#            obj = Practice.objects.create(
-#                course_id=course,
-#                prac_quiz_name=form.cleaned_data['name'],
-#                description=description,
-#                number_of_question=form.cleaned_data['number_of_questions'],
-#                negative_marks=form.cleaned_data['negative_marks'],
-#                total_score=total_score
-#                            )
-#            # print "Done"
-#            return redirect('/ocms/' + course_code + '/edit_prac_quiz/' + str(obj.pk))
-#            '''except:
-#                return HttpResponse('Unexpected Error')'''
-#        if form.errors:
-#            errors = form.errors
-#        print("ASDAS")
-#        return render(request, 'coursemanagement/create_practice_contest.html',
-#                      {'form': form, 'errors': errors})
-#
-#    else:
-#        return HttpResponse("unautherized Access!!It will be reported!!")
 
 @login_required
 def create_quiz(request, course_code):
