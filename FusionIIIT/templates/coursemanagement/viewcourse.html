@@ -468,8 +468,23 @@
 
         prevassessmenttab = pk;
       });
+      var vptab = 'assignmenttab';
+      $('#assignmenttab').addClass('active');
+      $('#assignmenttabdata').addClass('active');
+      $('.vptab').click(function(){
+        id = $(this).attr('id');
+        $('#'+vptab).removeClass('active');
+        $('#'+id).addClass('active');
+        $('#'+vptab+"data").removeClass('active');
+        $('#'+id+"data").addClass('active');
+
+        vptab = id;
       });
+      });
+
+
     </script>
+
     <script>
          $(".pointing.pagination.menu")
             .tab()
@@ -568,7 +583,7 @@
       for (i = 0; i < quiz_btn.length; i++) {
           var re = window.setInterval(fun, 1000);
           var pk = quiz_btn[i].getAttribute('data-pk');
-          var start = new Date(quiz_btn[i].getAttribute('data-start'));h
+          var start = new Date(quiz_btn[i].getAttribute('data-start'));
           function fun()
           {
             if({{Lecturer}} == "0"){
@@ -1028,3 +1043,4 @@
 
 
 {% endblock %}
+>>>>>>> cead69955c163798dcb5d30c8fa5b6356b5ecfaf
