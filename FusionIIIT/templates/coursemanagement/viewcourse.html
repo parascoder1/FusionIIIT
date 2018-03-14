@@ -468,8 +468,23 @@
         
         prevassessmenttab = pk;
       });
+      var vptab = 'assignmenttab';
+      $('#assignmenttab').addClass('active');
+      $('#assignmenttabdata').addClass('active');
+      $('.vptab').click(function(){
+        id = $(this).attr('id');
+        $('#'+vptab).removeClass('active');
+        $('#'+id).addClass('active');
+        $('#'+vptab+"data").removeClass('active');
+        $('#'+id+"data").addClass('active');
+        
+        vptab = id;
       });
+      });
+
+      
     </script>
+
     <script>
          $(".pointing.pagination.menu")
             .tab()
