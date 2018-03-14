@@ -6,55 +6,35 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Quiz</title>
-		<meta name="description" content="Examples for creative website header animations using Canvas and JavaScript" />
-		<meta name="keywords" content="header, canvas, animated, creative, inspiration, javascript" />
-		<meta name="author" content="Codrops" />
-		<script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
 		<link rel="stylesheet" type="text/css" href="{% static 'globals/css/semantic.min.css' %}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />		<script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
-		<link  href="http://cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.css" rel="stylesheet"> <!-- 3 KB -->
-		<script src="http://cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.js"></script> <!-- 16 KB -->
-		<script type="text/javascript" src="{% static 'globals/js/semantic.min.js' %}"></script>
-		<script type="text/javascript" src="{% static 'globals/js/dropdown.js' %}"></script>
-    <meta charset="utf-8">
+		<link  href="http://cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.css" rel="stylesheet">
     <style media="screen">
       #demo{
         text-align: center;
         font-size: 60px;
       }
     </style>
-    <script type="text/javascript">
-    document.onkeydown = function(e) {
-      switch (event.keyCode) {
-          case 116 : //F5 button
-              event.returnValue = false;
-              event.keyCode = 0;
-              return false;
-          case 82 : //R button
-              if (event.ctrlKey) {
-                  e.preventDefault(e);
-                  event.keyCode = 0;
-                  return false;
-              }
-      }
-    }
-    window.onunload = function () {
-           var r = confirm( "Press a button!" )
-           if ( r == true ) {
-               alert( "You pressed OK!" )
-           }
-           else {
-               alert( "You pressed Cancel!" )
-           }
-
-       };
-
-    </script>
-    <title>Past Contests</title>
+    <title>{{contest.quiz_name}}</title>
   </head>
-  <body oncontextmenu="return false;">
 
+  <body oncontextmenu="return false;">
+    <div id="quizNav">
+        <div class="ui stackable massive inverted top attached menu" id="navbar">
+            <a class="item">
+                {{contest.course_id}}
+            </a>
+
+            <div class="right inverted menu">
+                <a class="item" href="{% url 'eis:profile' %}">
+                    <img class="ui avatar image" src="{% static 'globals/img/zlatan.jpg' %}">&nbsp;
+                    {{ request.user.first_name}}
+                {{ request.user.last_name}}
+                </a>
+            </div>
+        </div>
+        <div class="ui divider"></div>
+    </div>
 		<div>
       <h1 class="ui massive center aligned header"> {{contest.quiz_name}}</h1>
       <div class="ui two column grid" style="padding-top:5em;padding-bottom:15em;padding-left:5em;padding-right:5em">
@@ -152,15 +132,14 @@
           </div>
 
           <div class="ui piled segment " style="min-height:20em">
-            <span class="ui">ANNUOUNCMENTS</span>
+            <span class="ui">RULES &amp; REGULATIONS</span>
             <div class="ui divider">
               <div class="ui big list">
-                {% for question in ques %}
-                <div class="item ann" data-pk={{question.pk}} data={{forloop.counter}} id=ann{{forloop.counter}} style="display:none">
-                  <div class="header"></div>
-                      {{question.announcement}}
-                </div>
-                {% endfor %}
+                <div class="item">
+                          {% for x in rules %}
+                          <p>{{forloop.counter}}){{x}}</p>
+                          {% endfor %}
+                      </div>
               </div>
             </div>
           </div>
@@ -168,6 +147,39 @@
 
       </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.js"></script>
+    <script type="text/javascript" src="{% static 'globals/js/semantic.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'globals/js/dropdown.js' %}"></script>
+    <script type="text/javascript">
+    document.onkeydown = function(e) {
+      switch (event.keyCode) {
+          case 116 : //F5 button
+              event.returnValue = false;
+              event.keyCode = 0;
+              return false;
+          case 82 : //R button
+              if (event.ctrlKey) {
+                  e.preventDefault(e);
+                  event.keyCode = 0;
+                  return false;
+              }
+      }
+    }
+    window.onunload = function () {
+           var r = confirm( "Press a button!" )
+           if ( r == true ) {
+               alert( "You pressed OK!" )
+           }
+           else {
+               alert( "You pressed Cancel!" )
+           }
+
+       };
+
+    </script>
+
     <script>
       var past=1;
       var count={{contest.number_of_question}};
@@ -308,4 +320,5 @@
     </script>
 
   </body>
+
 </html>

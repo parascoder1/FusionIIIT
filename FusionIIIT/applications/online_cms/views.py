@@ -558,7 +558,12 @@ def quiz(request, quiz_id):
     if extrainfo.user_type == 'student':
         # student = Student.objects.get(id=extrainfo)
         quiz = Quiz.objects.get(pk=quiz_id)
+        student = Student.objects.get(id=extrainfo)
+        roll = student.id.id[:4]
+        course = Course.objects.filter(course_id=quiz.course_id, sem=semester(roll))
         length = quiz.number_of_question
+        rules = quiz.rules
+        rules = [z.encode('ascii', 'ignore') for z in rules.split('/')]
         ques_pk = QuizQuestion.objects.filter(quiz_id=quiz).values_list('pk', flat=True)
         random_ques_pk = random.sample(list(ques_pk), length)
         shuffed_questions = []
@@ -573,7 +578,7 @@ def quiz(request, quiz_id):
         seconds = seconds % 60
         return render(request, 'coursemanagement/quiz.html',
                       {'contest': quiz, 'ques': shuffed_questions,
-                       'days': days, 'hours': hours, 'minutes': minutes, 'seconds': seconds})
+                       'days': days, 'hours': hours, 'minutes': minutes, 'seconds': seconds, 'rules' : rules})
     else:
         return HttpResponse("unautherized Access!!It will be reported!!")
 
