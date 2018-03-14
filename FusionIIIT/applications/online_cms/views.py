@@ -117,12 +117,10 @@ def course(request, course_code):
         marks = []
         quizs = []
         assignment = Assignment.objects.filter(course_id=course)
-        print(assignment,"asdads")
         student_assignment = []
         for assi in assignment:
             sa = StudentAssignment.objects.filter(assignment_id=assi)
             student_assignment.append(sa)
-        print(student_assignment,"ASDs")
         for q in quiz:
             qs = QuizResult.objects.filter(quiz_id=q)
             if q.end_time > timezone.now():
@@ -350,7 +348,6 @@ def ajax_new(request, course_code):
 
     data = {'pk': f.pk, 'question': f.comment, 'replier': f.commenter_id.user.username,
             'time': time, 'name': name}
-    print(f.pk)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
@@ -435,18 +432,15 @@ def edit_bank(request, course_code,qb_code):
         Topic={}
         if qb:
             questions=Question.objects.filter(question_bank=qb[0]).values_list('topic', flat=True)
-            print(questions)
             counter=dict(collections.Counter(questions))
-            print (counter)
             for topic in topics:
                 if topic.pk in counter.keys():
                     Topic[topic]=counter[topic.pk]
                 else:
                     Topic[topic]=0
-            print(Topic)
             return render(request, 'coursemanagement/create_bank.html', {'Lecturer':lec,'questionbank':qb[0],'topics':Topic,'course':course})
         else:
-            return HttpResponse("Unauthrized")
+            return HttpResponse("Unauthorized")
 
 
 @login_required
@@ -480,7 +474,6 @@ def remove_bank(request, course_code):
 @login_required
 def add_question(request, course_code, qb_code, topic_id):
     user = request.user
-    print(qb_code,topic_id,"ADADADADASDADA")
     extrainfo = ExtraInfo.objects.get(user=user)
     if extrainfo.user_type == "faculty":
         instructor = Instructor.objects.filter(instructor_id=extrainfo)

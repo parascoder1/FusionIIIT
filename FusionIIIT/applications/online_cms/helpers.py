@@ -1,5 +1,6 @@
 from datetime import datetime
-
+import subprocess
+from django.conf import settings
 
 def semester(roll):
     month = datetime.now().month
